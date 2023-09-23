@@ -6,6 +6,9 @@ const { body, validationResult } = require('express-validator');
 const isAuthenticated = require("../middleware/isAuthenticated");
 const Complaint = require('../models/Complaint');
 const SOS = require('../models/SOS');
+const Heat = require('../models/HeatmapData');
+
+
 // new complaint endpoint
 router.post('/complaint',isAuthenticated, [
     body('description', 'Enter a valid description').isLength({min: 15}),
@@ -29,6 +32,11 @@ router.post('/complaint',isAuthenticated, [
             longitude: req.body.longitude,
             latitude: req.body.latitude,
              userid: user._id
+        })
+        await Heat.create({
+            category: report.category,
+            longitude: report.longitude,
+            latitude: report.latitude
         })
         success = true;
         res.json({ success,msg : "Complaint Registered successfully!" })
@@ -64,6 +72,7 @@ router.post('/complaint',isAuthenticated, [
         try {
             let complaintId = req.params.id   
             let complaint = await Complaint.findByIdAndUpdate(complaintId,{isResolved:true});
+            await Heat.findOneAndDelete({latitude: complaint.latitude,longitude: complaint.longitude})
             success = true;
             res.json({success,complaint});
         } catch (error) {
@@ -85,6 +94,11 @@ router.post('/complaint',isAuthenticated, [
                 details: req.body.details,
                 longitude: req.body.longitude,
                 latitude: req.body.latitude,
+            })
+            await Heat.create({
+                category: sos.category,
+                longitude: sos.longitude,
+                latitude: sos.latitude
             })
             success = true;
             res.json({ success,msg : "Alert successful!" })
@@ -110,6 +124,7 @@ router.post('/complaint',isAuthenticated, [
             try {
                 let sosId = req.params.id   
                 let sos = await SOS.findByIdAndDelete(sosId);
+                await Heat.findOneAndDelete({latitude: sos.latitude,longitude: sos.longitude})
                 success = true;
                 res.json({success,sos});
             } catch (error) {

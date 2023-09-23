@@ -5,13 +5,14 @@ const cors = require('cors');
 const app = express();
 
 require('dotenv').config();
-
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth',require('./routes/Auth'))
+app.use('/',require('./routes/Report'))
+app.use('/',require('./routes/Heat'))
 
-mongoose.connect('mongodb+srv://targetsih2023:4JCEsZbnq10Zr2CX@bytebrigade.wftiyhj.mongodb.net/',{
+mongoose.connect(process.env.MONGO_URI,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(()=>{
