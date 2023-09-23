@@ -26,6 +26,9 @@ function Signup({ navigation }) {
           navigation.navigate("Normal");
         }}
       />
+      <Button title="Admin" onPress={()=>{
+        navigation.navigate('Admin')
+      }}/>
     </View>
   );
 }
