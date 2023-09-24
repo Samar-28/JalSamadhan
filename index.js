@@ -11,6 +11,9 @@ app.use(express.json());
 app.use('/api/auth',require('./routes/Auth'))
 app.use('/',require('./routes/Report'))
 app.use('/',require('./routes/Heat'))
+app.use('/forums',require('./routes/Forum'))
+app.use('/',require('./routes/Announcement'))
+app.use('/',require('./routes/Contributors'))
 app.use('/resource',require('./routes/ReqResource'))
 
 mongoose.connect(process.env.MONGO_URI,{
