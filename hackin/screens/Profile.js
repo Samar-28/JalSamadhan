@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-
+import Context from "../ContextAPI";
 function Profile({ navigation }) {
+  const context=useContext(Context)
   const user = {
-    name: "John Doe",
-    phoneNumber: "+1234567890",
+    name: context.name,
+    phoneNumber: context.phone,
   };
 
   const handleLogout = () => {
-    navigation.navigate('Signup')
+    context.setname('');
+    context.setphone('');
+    context.setstate('');
+    navigation.navigate("Login");
   };
 
   return (
@@ -23,18 +27,19 @@ function Profile({ navigation }) {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.button}
+          onPress={() => navigation.navigate("Contribute")}
         >
           <Text style={styles.buttonText}>Become a Contributor</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("Privacy")}
+          onPress={() => navigation.navigate("privacy")}
         >
           <Text style={styles.buttonText}>Privacy Policy</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("TOS")}
+          onPress={() => navigation.navigate("tos")}
         >
           <Text style={styles.buttonText}>Terms of Use</Text>
         </TouchableOpacity>
@@ -42,7 +47,6 @@ function Profile({ navigation }) {
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
-        
       </TouchableOpacity>
     </View>
   );

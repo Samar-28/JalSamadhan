@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -7,13 +7,16 @@ import {
   StyleSheet,
 } from "react-native";
 import ImagePicker from "../component/ImagePicker";
+import Context from "../ContextAPI";
 const Complaint = ({ navigation }) => {
+  const context = useContext(Context);
   const [desc, setdesc] = useState("");
   const [address, setAddress] = useState("");
   const [photo, setPhoto] = useState(null);
 
   const handleSubmit = () => {
-    navigation.navigate("HomePage");
+    console.log(context.COMPLAINT(photo, desc, address));
+    navigation.navigate("Home");
   };
 
   return (
@@ -36,10 +39,8 @@ const Complaint = ({ navigation }) => {
       />
       <ImagePicker setimg={setPhoto} />
       <View style={{ marginTop: 20 }}>
-        <Button title="Submit" 
-        onPress={handleSubmit}
-         />
-       </View>
+        <Button title="Submit" onPress={handleSubmit} />
+      </View>
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,17 @@ import {
   StyleSheet,
 } from "react-native";
 import Logo from "../logo.png";
+import Context from "../ContextAPI";
 function Home({ navigation }) {
-  const [announcements, setannouncements] = useState([
-    {
-      title: "Hello",
-      description: "Hello",
-    },
-  ]);
+  const context = useContext(Context);
+  const [announcements, setannouncements] = useState([]);
+  useEffect(() => {
+    async function ann() {
+      const response = await context.getAnn();
+      setannouncements(response);
+    }
+    ann();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -40,7 +44,7 @@ function Home({ navigation }) {
                 onPress={() => {
                   navigation.navigate("Announcement", {
                     title: announcement.title,
-                    description: announcement.description,
+                    description: announcement.desc,
                   });
                 }}
               >
@@ -54,6 +58,14 @@ function Home({ navigation }) {
           )}
         </ScrollView>
       </View>
+      <TouchableOpacity
+        style={styles.complaintsButton}
+        onPress={() => {
+          navigation.navigate("Complaint");
+        }}
+      >
+        <Text style={styles.complaintsButtonText}>Complaints</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -66,7 +78,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoContainer: {
-    flex: 3,
+    flex: 3, 
     justifyContent: "center",
     alignItems: "center",
   },

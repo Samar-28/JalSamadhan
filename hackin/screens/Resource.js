@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -6,29 +6,71 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Modal,
+  ScrollView,
+  Pressable,
 } from "react-native";
+import * as Location from "expo-location";
+import Context from "../ContextAPI";
 
 function Resource({ navigation }) {
-  const [location, setLocation] = useState("");
-  const [additionalDetails, setAdditionalDetails] = useState("");
+  const context = useContext(Context);
+  const [address, setAddress] = useState("");
+  const [details, setDetails] = useState("");
+  const [location, setLocation] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [cat, setcat] = useState("");
+  const categories = [
+    "Water",
+    "Food",
+    "Shelter",
+    "Medical Supplies",
+    "Other Categories",
+  ];
 
-  const handleRequestSubmit = () => {
-    const resourceRequestData = {
-      location,
-      additionalDetails,
-    };
-    const isEmergency = 0;
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
 
-    if (!isEmergency) {
-      Alert.alert(
-        "Warning",
-        "This feature should only be used during disaster emergencies. Misuse may result in blacklisting from the app."
-      );
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation({
+        long: location.coords.longitude,
+        lat: location.coords.latitude,
+      });
+    })();
+  }, []);
+console.log(location)
+  const handleRequestSubmit = async () => {
+    // if (location === null) {
+    //   Alert.alert("Wait");
+    //   return;
+    // }
+
+    if (!cat) {
+      Alert.alert("Please select a category");
       return;
     }
+
     Alert.alert(
-      `Resource request submitted: ${JSON.stringify(resourceRequestData)}`
+      "Warning",
+      "This feature should only be used during disaster emergencies. Misuse may result in blacklisting from the app."
     );
+      const lat=location?location.lat:'';
+      const long=location?location.long:'';
+
+    const response = await context.AddResReq(
+      details,
+      address,
+      lat,long,
+      cat
+    );
+    setDetails("");
+    setAddress("");
+    setcat("");
   };
 
   return (
@@ -38,30 +80,68 @@ function Resource({ navigation }) {
         result in blacklisting from the app.
       </Text>
 
-      <Text style={styles.label}>Location:</Text>
+      <Text style={styles.label}>Address:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter location"
-        value={location}
-        onChangeText={(text) => setLocation(text)}
+        placeholder="Enter address"
+        value={address}
+        onChangeText={(text) => setAddress(text)}
       />
 
       <Text style={styles.label}>Additional Details:</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter additional details (optional)"
-        value={additionalDetails}
-        onChangeText={(text) => setAdditionalDetails(text)}
+        value={details}
+        onChangeText={(text) => setDetails(text)}
         multiline
         numberOfLines={4}
       />
 
       <TouchableOpacity
-        style={styles.submitButton}
-        onPress={handleRequestSubmit}
+        style={styles.categoryButton}
+        onPress={() => setModalVisible(true)}
       >
+        <Text style={styles.buttonText}>
+          {cat || "Select Category"}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.submitButton} onPress={handleRequestSubmit}>
         <Text style={styles.buttonText}>Submit Request</Text>
       </TouchableOpacity>
+
+      {/* Category Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <ScrollView>
+            {categories.map((category, index) => (
+              <Pressable
+                key={index}
+                onPress={() => {
+                  setcat(category);
+                  setModalVisible(!modalVisible);
+                }}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? "#3498db" : "white",
+                  },
+                  styles.categoryItem,
+                ]}
+              >
+                <Text style={styles.categoryText}>{category}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -94,10 +174,31 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 15,
   },
+  categoryButton: {
+    backgroundColor: "#3498db",
+    borderRadius: 5,
+    paddingVertical: 15,
+    marginBottom: 20,
+  },
   buttonText: {
     color: "#fff",
     fontSize: 16,
     textAlign: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  categoryItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  categoryText: {
+    fontSize: 16,
+    color: "#3498db",
   },
 });
 

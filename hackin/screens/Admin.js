@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Context from '../ContextAPI';
 function Admin({ navigation }) {
-  const adminName = 'Admin Name';
-  const adminPhoneNumber = '123-456-7890';
+const context=useContext(Context);
+  const adminName = context.name;
+  const adminPhoneNumber = context.phone;
   const handleLogout = () => {
+    context.setname('');
+    context.setphone('');
+    context.setstate('');
     navigation.navigate('Login');
   };
 
@@ -15,21 +20,25 @@ function Admin({ navigation }) {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.button}
+          onPress={() => navigation.navigate('States')}
         >
           <Text style={styles.buttonText}>Complaints</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
+          onPress={() => navigation.navigate('AddAnnouncement')}
         >
           <Text style={styles.buttonText}>Add Announcement</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
+          onPress={() => navigation.navigate('Request_Resource_Cat')}
         >
           <Text style={styles.buttonText}>See Resource Requests</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
+          onPress={() => navigation.navigate('VerifyContributors')}
         >
           <Text style={styles.buttonText}>Verify Contributors</Text>
         </TouchableOpacity>

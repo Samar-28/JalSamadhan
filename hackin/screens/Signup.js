@@ -1,9 +1,26 @@
-import React, { useState } from "react";
-import { View, Text, Button, StyleSheet, TextInput } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import {
+  View,
+  Text,
+  Button,
+  Alert,
+  StyleSheet,
+  TextInput,
+  Modal,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
+import Context from "../ContextAPI";
 
 function Signup({ navigation }) {
+  const context = useContext(Context);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [name, setName] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [otpInput, setOtpInput] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
+  const { stateAndUTData } = useContext(Context);
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>Signup</Text>
@@ -12,7 +29,12 @@ function Signup({ navigation }) {
         placeholder="Name"
         onChangeText={(text) => setName(text)}
       />
-
+      <TouchableOpacity
+        style={styles.selectButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text>{selectedState ? selectedState : "Select State/UT"}</Text>
+      </TouchableOpacity>
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
@@ -23,12 +45,37 @@ function Signup({ navigation }) {
       <Button
         title="Signup"
         onPress={() => {
-          navigation.navigate("Normal");
+          context.signUp(name, phoneNumber, selectedState);
+          navigation.navigate("NormalUser");
         }}
       />
-      <Button title="Admin" onPress={()=>{
-        navigation.navigate('Admin')
-      }}/>
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <FlatList
+            data={stateAndUTData}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.modalItem}
+                onPress={() => {
+                  setSelectedState(item.name);
+                  setModalVisible(false);
+                }}
+              >
+                <Text>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
     </View>
   );
 }

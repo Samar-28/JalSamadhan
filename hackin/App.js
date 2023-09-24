@@ -1,59 +1,106 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import Home from "./screens/Home";
-import Forum from "./screens/Forum";
-import Resource from "./screens/Resource";
-import SOS from "./screens/SOS";
-import Login from "./screens/Login";
-import TOS from "./screens/TOS";
-import Signup from "./screens/Signup";
-import Privacy from "./screens/Privacy";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import Sos from "./screens/SOS";
 import Complaint from "./screens/Complaint";
+import Forum from "./screens/Forum";
+import Home from "./screens/Home";
+import Contribute from "./screens/Contribute";
+import Adminer from "./screens/Admin";
+import Login from "./screens/Login";
+import Signup from "./screens/Signup";
+import Profiler from "./screens/Profile";
 import Announcement from "./screens/Announcement";
-import Admin from './screens/Admin'
-import Profile from './screens/Profile'
+import TOS from "./screens/TOS";
+import Privacy from "./screens/Privacy";
+import StateWise from "./screens/admin_control/StateWise";
+import ComplaintPosts from "./screens/admin_control/ComplaintPosts";
+import AddAnnouncement from "./screens/admin_control/AddAnnouncement";
+import Resource from "./screens/Resource";
+import Request_Resource_Cat from "./screens/admin_control/Request_Resource_Cat";
+import ResourceRequestsScreen from "./screens/admin_control/ResourceRequestsScreen";
+import VerifyContributors from "./screens/admin_control/VerifyContributors";
+import SosDetails from "./screens/SosDetails";
+import Map from "./screens/Map";
+import WaterState from "./Data";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-const HomeStack = () => {
+const Stacker = () => {
   return (
-    <Stack.Navigator screenOptions={({ navigation }) => ({
-      headerTitleAlign: "center",
-      headerTitleStyle: {
-        fontWeight: "bold",
-      },
-      headerLeft: () => {
-        return (
-          <Ionicons
-            name="person"
-            onPress={() => {
-              navigation.navigate("Profile");
-            }}
-            size={32}
-            color="black"
-            style={{ marginRight: 5, marginTop: 5 }}
-          />
-        );
-      },
-    })}>
-      <Stack.Screen
-        name="home"
-        component={Home}
-        
-      />
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        headerTitleAlign: "center",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+        headerLeft: () => {
+          return (
+            <Ionicons
+              name="person"
+              onPress={() => {
+                navigation.navigate("Profile");
+              }}
+              size={32}
+              color="black"
+              style={{ marginRight: 5, marginTop: 5 }}
+            />
+          );
+        },
+      })}
+    >
+      <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Announcement" component={Announcement} />
+      <Stack.Screen name="Complaint" component={Complaint} />
+      <Stack.Screen name="Contribute" component={Contribute} />
     </Stack.Navigator>
   );
 };
-const Tabs = () => {
+const Emergency = () => {
   return (
-    <Tab.Navigator>
+    <>
+      <Stack.Navigator initialRouteName="mainemergency">
+        <Stack.Screen
+          name="mainemergency"
+          component={Sos}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SosDetails"
+          component={SosDetails}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </>
+  );
+};
+const NormalUser = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({ navigation }) => ({
+        headerTitleAlign: "center",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+        headerLeft: () => {
+          return (
+            <Ionicons
+              name="person"
+              onPress={() => {
+                navigation.navigate("Profile");
+              }}
+              size={32}
+              color="black"
+              style={{ marginRight: 5, marginTop: 5 }}
+            />
+          );
+        },
+      })}
+    >
       <Tab.Screen
-        name="HomePage"
-        component={HomeStack}
+        name="Stacker"
+        component={Stacker}
         options={{
           headerShown: false,
           title: "Home",
@@ -62,63 +109,111 @@ const Tabs = () => {
           },
         }}
       />
+
       <Tab.Screen
-        name="Resource"
-        component={Resource}
+        name="HeatMap"
+        component={Map}
         options={{
+          title: "HeatMap",
           tabBarIcon: ({ color, size }) => {
-            return <Entypo name="shopping-bag" color={color} size={size} />;
+            return <Ionicons name="map" color={color} size={size} />;
           },
         }}
       />
       <Tab.Screen
         name="SOS"
-        component={SOS}
+        component={Emergency}
         options={{
+          title: "SOS",
           tabBarIcon: ({ color, size }) => {
             return <MaterialIcons name="dangerous" color={color} size={size} />;
           },
         }}
       />
       <Tab.Screen
-        name="Forum"
-        component={Forum}
+        name="Resource"
+        component={Resource}
         options={{
+          title: "Request Resource",
           tabBarIcon: ({ color, size }) => {
-            return <Entypo name="chat" color={color} size={size} />;
+            return <Ionicons name="warning" color={color} size={size} />;
           },
         }}
       />
       <Tab.Screen
-        name="Complaint"
-        component={Complaint}
+        name="CommunityForum"
+        component={Forum}
         options={{
-          
+          title: "Forum",
           tabBarIcon: ({ color, size }) => {
-            return <Entypo name="warning" color={color} size={size} />;
+            return <MaterialIcons name="forum" color={color} size={size} />;
           },
         }}
       />
     </Tab.Navigator>
   );
 };
+const Profile = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="main" component={Profiler} />
+      <Stack.Screen name="contribute" component={Contribute} />
+      <Stack.Screen name="tos" component={TOS} />
+      <Stack.Screen name="privacy" component={Privacy} />
+    </Stack.Navigator>
+  );
+};
 export default function App() {
   return (
-    <NavigationContainer>
-      <StatusBar style="auto" />
-      <Stack.Navigator>
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Profile" component={Profile}/>
-        <Stack.Screen name="Admin" component={Admin}/>
-        <Stack.Screen
-          name="Normal"
-          component={Tabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="TOS" component={TOS} />
-        <Stack.Screen name="Privacy" component={Privacy} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <WaterState>
+          <StatusBar style="auto" />
+          <Stack.Navigator
+            // initialRouteName="adminmain"
+            screenOptions={{
+              headerTitleAlign: "center",
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+            }}
+          >
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                title: "JalSamadhan",
+                headerLeft: () => {
+                  return <Ionicons name="add-circle" color="white"></Ionicons>;
+                },
+              }}
+            />
+            <Stack.Screen
+              name="NormalUser"
+              component={NormalUser}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="adminmain" component={Adminer} />
+            <Stack.Screen name="States" component={StateWise} />
+            <Stack.Screen name="ComplaintPosts" component={ComplaintPosts} />
+            <Stack.Screen name="AddAnnouncement" component={AddAnnouncement} />
+            <Stack.Screen
+              name="Request_Resource_Cat"
+              component={Request_Resource_Cat}
+            />
+            <Stack.Screen
+              name="ResourceRequestsScreen"
+              component={ResourceRequestsScreen}
+            />
+            <Stack.Screen name="Signup" component={Signup} />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen
+              name="VerifyContributors"
+              component={VerifyContributors}
+            />
+          </Stack.Navigator>
+        </WaterState>
+      </NavigationContainer>
+    </>
   );
 }

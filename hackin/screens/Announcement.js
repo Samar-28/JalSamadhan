@@ -7,8 +7,8 @@ function Announcement({ route }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <ScrollView style={styles.descriptionCon}>
-        <Text style={styles.descriptionText}>{description}</Text>
+      <ScrollView style={styles.descriptionContainer}>
+        <Text style={styles.description}>{description}</Text>
       </ScrollView>
     </View>
   );
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  descriptionCon: {
+  descriptionContainer: {
     flex: 1,
     borderWidth: 1,
     borderColor: "#ddd",

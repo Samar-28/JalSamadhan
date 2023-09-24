@@ -1,14 +1,30 @@
-import React, { useState } from "react";
-import { View, Text, Button, TextInput } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, Text, Button, Alert, TextInput, StyleSheet } from "react-native";
+import Context from "../ContextAPI";
 function Login({ navigation }) {
+  const context = useContext(Context);
+
   const [phoneNumber, setPhoneNumber] = useState("");
-  const handleLogin = () => {
-    navigation.navigate("Normal");
+  const handleLogin = async() => {
+const response=await context.login(phoneNumber);
+    if(Object.keys(response).length !== 0){
+    context.setadmin(response.admin);
+    context.setname(response.name);
+    context.setstate(response.state);
+    if(response.admin){
+      navigation.navigate('adminmain');
+    }else{
+      navigation.navigate('NormalUser');
+    }
+}else{
+  Alert.alert("Invalid","Use correct credentials or signup!");
+  return;
+}
   };
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Login</Text>
+      <Text>Login with OTP</Text>
       <TextInput
         style={{
           height: 50,
@@ -24,9 +40,9 @@ function Login({ navigation }) {
         maxLength={10}
         onChangeText={(text) => setPhoneNumber(text)}
       />
-
+      
       <Button title="Login" onPress={handleLogin} />
-      <Text style={{ marginTop: 20 }}>Not a user? Sign up now</Text>
+      <Text style={{ marginVertical: 20 }}>Not a user? Sign up now</Text>
       <Button
         title="Signup"
         onPress={() => {
@@ -39,3 +55,28 @@ function Login({ navigation }) {
 }
 
 export default Login;
+const styles = StyleSheet.create({
+  borderStyleBase: {
+    width: 30,
+    height: 45,
+    color: "black",
+  },
+
+  borderStyleHighLighted: {
+    borderColor: "black",
+    color: "black",
+  },
+
+  underlineStyleBase: {
+    width: 30,
+    height: 45,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    color: "black",
+  },
+
+  underlineStyleHighLighted: {
+    borderColor: "black",
+    color: "black",
+  },
+});
