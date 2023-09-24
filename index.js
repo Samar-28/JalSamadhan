@@ -11,6 +11,7 @@ app.use(express.json());
 app.use('/api/auth',require('./routes/Auth'))
 app.use('/',require('./routes/Report'))
 app.use('/',require('./routes/Heat'))
+app.use('/resource',require('./routes/ReqResource'))
 
 mongoose.connect(process.env.MONGO_URI,{
     useNewUrlParser: true,
