@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import Sos from "./screens/SOS";
 import Complaint from "./screens/Complaint";
 import Forum from "./screens/Forum";
@@ -25,6 +25,8 @@ import VerifyContributors from "./screens/admin_control/VerifyContributors";
 import SosDetails from "./screens/SosDetails";
 import Map from "./screens/Map";
 import WaterState from "./Data";
+import ForumPost from './screens/ForumPost'
+import AddPostScreen from "./screens/AddForumPost";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const Stacker = () => {
@@ -75,6 +77,33 @@ const Emergency = () => {
     </>
   );
 };
+const Forums=()=>{
+  return(
+    <Stack.Navigator screenOptions={({ navigation }) => ({
+      headerTitleAlign: "center",
+      headerTitleStyle: {
+        fontWeight: "bold",
+      },
+      headerRight: () => {
+        return (
+          <AntDesign
+            name="pluscircle"
+            onPress={() => {
+              navigation.navigate("AddPostScreen");
+            }}
+            size={32}
+            color="black"
+            style={{ marginRight: 5, marginTop: 5 }}
+          />
+        );
+      },
+    })}>
+      <Stack.Screen name="Forum" component={Forum}/>
+      <Stack.Screen name="ForumPost" component={ForumPost}/>
+      <Stack.Screen name="AddPostScreen" component={AddPostScreen}/>
+    </Stack.Navigator>
+  )
+}
 const NormalUser = () => {
   return (
     <Tab.Navigator
@@ -142,9 +171,9 @@ const NormalUser = () => {
       />
       <Tab.Screen
         name="CommunityForum"
-        component={Forum}
+        component={Forums}
         options={{
-          title: "Forum",
+          title: "Forum",headerShown:false,
           tabBarIcon: ({ color, size }) => {
             return <MaterialIcons name="forum" color={color} size={size} />;
           },

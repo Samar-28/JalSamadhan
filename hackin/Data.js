@@ -7,6 +7,7 @@ const WaterState = ({ children }) => {
   const [state, setstate] = useState("");
   const [admin, setadmin] = useState(false);
   const [authtoken, setauthtoken] = useState(null);
+  const [location, setLocation] = useState(null);
   const stateAndUTData = [
     {
       id: "1",
@@ -95,6 +96,7 @@ const WaterState = ({ children }) => {
     try {
       setphone(phone);
       const response = await axios.get(`${BASE_URL}/user.json`);
+      console.log(response.data)
       for (i in response.data) {
         if (response.data[i].phone === phone) {
           setname(response.data[i].name);
@@ -104,6 +106,7 @@ const WaterState = ({ children }) => {
       }
       return {};
     } catch (error) {
+      console.log(error);
       console.error("Error during login:", error);
       return { success: false, error: "Error occurred during login" };
     }
@@ -140,7 +143,7 @@ const WaterState = ({ children }) => {
   //aNNOUNCEMENT
 
   //SOS
-  const SOS = async (image, category, details, longitude, latitude) => {
+  const SOS = async (image,category, details, longitude, latitude) => {
     try {
       const response = await axios.post(`${BASE_URL}/SOS.json`, {
         name,
@@ -179,20 +182,60 @@ const WaterState = ({ children }) => {
       return { success: false, error: "Error occurred during sign-up" };
     }
   };
-  const getComplaints = async () => {
+  const getComplaints = async (stater) => {
     try {
       const response = await axios.get(`${BASE_URL}/Complaints.json`);
       let arr = [];
       for (i in response.data) {
-        arr.push(response.data[i]);
+        if (response.data[i].state === stater) {
+          const obj = {
+            id: i,
+            name: response.data[i].name,
+            phone: response.data[i].phone,
+            state: response.data[i].state,
+            image: response.data[i].image,
+            add: response.data[i].add,
+            details: response.data[i].details,
+            resolved: response.data[i].resolved,
+          };
+          arr.push(obj);
+        }
       }
-      console.log(arr);
       return arr;
     } catch (error) {
       console.error("Error during add-up:", error);
       return { success: false, error: "Error occurred during sign-up" };
     }
   };
+
+  const ResolveComplaint = async (id) => {
+    try {
+      const okay = await axios.get(`${BASE_URL}/Complaints/${id}.json`);
+      const obj = okay.data;
+      let verified;
+      console.log(obj.resolved)
+      if (obj.resolved === 1) {
+        verified = 0;
+      } else {
+        verified = 1;
+      }
+      console.log(verified);
+      const response = await axios.put(`${BASE_URL}/Complaints/${id}.json`, {
+        id: i,
+        name: obj.name,
+        phone: obj.phone,
+        state: obj.state,
+        image: obj.image,
+        add: obj.add,
+        details: obj.details,
+        resolved: verified,
+      });
+    } catch (error) {
+      console.error("Error during add-up:", error);
+      return { success: false, error: "Error occurred during sign-up" };
+    }
+  };
+//COMPLAINT
 
   //HEATMAP DATA FETCH
   const getPoints = async () => {
@@ -293,37 +336,41 @@ const WaterState = ({ children }) => {
   //CONTRIBUTOR
 
   //RESOURCE
-  const AddResReq = async (details, add, latitude,longitude,cat) => {
+  const AddResReq = async (details, add, latitude, longitude) => {
     try {
       let solved = 0;
-      console.log(latitude,longitude)
+      let cat="";
+      console.log(latitude, longitude);
       const response = await axios.post(`${BASE_URL}/Resource.json`, {
         details,
         add,
-        latitude,longitude,cat,
+        latitude,
+        longitude,
+        cat,
         solved,
       });
-      return response.data;
+      const cattter=await axios.put(`https://categorizer.onrender.com/Resource/${response.data.name}`,{description:details});
+      return cattter.data;
     } catch (error) {
       console.error("Error during add-up:", error);
       return { success: false, error: "Error occurred during sign-up" };
     }
   };
-  const GetResReq=async(cat)=>{
+  const GetResReq = async (cat) => {
     try {
       const response = await axios.get(`${BASE_URL}/Resource.json`);
-      let arr=[];
-      for(i in response.data){
-        if(response.data[i].cat===cat){
+      let arr = [];
+      for (i in response.data) {
+        if (response.data[i].cat === cat) {
           arr.push({
-            id:i,
-            details:response.data[i].details,
+            id: i,
+            details: response.data[i].details,
             add: response.data[i].add,
             latitude: response.data[i].latitude,
             longitude: response.data[i].longitude,
             cat: response.data[i].cat,
-            solved: response.data[i].solved
-          })
+            solved: response.data[i].solved,
+          });
         }
       }
       return arr;
@@ -331,19 +378,19 @@ const WaterState = ({ children }) => {
       console.error("Error during add-up:", error);
       return { success: false, error: "Error occurred during sign-up" };
     }
-  }
+  };
   const ApproveReq = async (id, veri) => {
     try {
       const response = await axios.get(`${BASE_URL}/Resource/${id}.json`);
       const okay = await axios.put(`${BASE_URL}/Resource/${id}.json`, {
-        details:response.data.details,
-            add: response.data.add,
-            latitude: response.data.latitude,
-            longitude: response.data.longitude,
-            cat: response.data.cat,
-            solved: veri
+        details: response.data.details,
+        add: response.data.add,
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
+        cat: response.data.cat,
+        solved: veri,
       });
-      console.log('ok');
+      console.log("ok");
       return okay.data;
     } catch (error) {
       console.error("Error during add-up:", error);
@@ -351,6 +398,56 @@ const WaterState = ({ children }) => {
     }
   };
   //RESOURCE
+
+  //FORUM
+  const AddForumPost = async (title, desc, img) => {
+    try {
+      let upvotes = 0;
+      let comments = ["init"];
+      const response = await axios.post(`${BASE_URL}/Forum.json`, {
+        name,
+        phone,
+        state,
+        title,
+        desc,
+        upvotes,
+        comments,
+        img,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error during add-up:", error);
+      return { success: false, error: "Error occurred during sign-up" };
+    }
+  };
+  const getForumPost = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/Forum.json`);
+      let arr = [];
+      for (i in response.data) {
+        if (response.data[i].state === state) {
+          const obj = {
+            id: i,
+            name: response.data[i].name,
+            phone: response.data[i].phone,
+            state: response.data[i].state,
+            title: response.data[i].title,
+            desc: response.data[i].desc,
+            img: response.data[i].img,
+            comments: response.data[i].comments,
+            upvotes: response.data[i].upvotes,
+          };
+          console.log(obj);
+          arr.push(obj);
+        }
+      }
+      console.log(arr);
+      return arr;
+    } catch (error) {
+      console.error("Error during add-up:", error);
+      return { success: false, error: "Error occurred during sign-up" };
+    }
+  };
   return (
     <Context.Provider
       value={{
@@ -375,7 +472,12 @@ const WaterState = ({ children }) => {
         AddContri,
         getContris,
         ApproveContri,
-        AddResReq,GetResReq,ApproveReq
+        AddResReq,
+        GetResReq,
+        ApproveReq,
+        AddForumPost,
+        getForumPost,
+        ResolveComplaint,setLocation,location
       }}
     >
       {children}

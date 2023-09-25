@@ -36,7 +36,7 @@ function Home({ navigation }) {
       <View style={styles.announcementsContainer}>
         <Text style={styles.announcementsHeader}>Announcements</Text>
         <ScrollView style={styles.announcementsList}>
-          {announcements.length !== 0 ? (
+          {/* {announcements.length !== 0 ? (
             announcements.map((announcement) => (
               <TouchableOpacity
                 key={announcement.title}
@@ -55,7 +55,7 @@ function Home({ navigation }) {
             ))
           ) : (
             <Text>No Announcements</Text>
-          )}
+          )} */}
         </ScrollView>
       </View>
       <TouchableOpacity

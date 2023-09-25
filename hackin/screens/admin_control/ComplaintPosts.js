@@ -16,12 +16,11 @@ function PostListScreen({ navigation, route }) {
   const context = useContext(Context);
   const [postData, setPostData] = useState([
   ]);
-  const [img, setimg] = useState(null);
-  const [imgmodvis, setimgmodvis] = useState(false);
 
   useEffect(() => {
     async function getter() {
-      const response = await context.getComplaints();
+      const response = await context.getComplaints(route.params.name);
+      console.log(response);
       setPostData(response);
     }
     getter();
@@ -33,21 +32,13 @@ function PostListScreen({ navigation, route }) {
     );
   };
 
-  const handleImageClick = (imageUri) => {
-    setimg(imageUri);
-    setimgmodvis(true);
+  const handleResolveClick = async(id) => {
+    const response=await context.ResolveComplaint(id);
+    console.log(response);
   };
-
-  const handleResolveClick = (id) => {
-    const updatedPosts = postData.map((post) =>
-      post.id === id ? { ...post, resolved: !post.resolved } : post
-    );
-    setPostData(updatedPosts);
-  };
-
   return (
     <View style={styles.container}>
-      <FlatList
+      {postData.length!=0?<FlatList
         data={postData}
         keyExtractor={(item) => item.details}
         renderItem={({ item }) => (
@@ -69,15 +60,13 @@ function PostListScreen({ navigation, route }) {
                 onPress={() => handleResolveClick(item.id)}
               />
             </View>
-            <TouchableOpacity onPress={() => handleImageClick(item.image)}>
               <Image
                 source={{ uri: item.image }}
                 style={{ height: 200, width: "100%", borderRadius: 4 }}
               />
-            </TouchableOpacity>
           </TouchableOpacity>
         )}
-      />
+      />:<Text>No Complaints in this State!</Text>}
     </View>
   );
 }
@@ -90,8 +79,8 @@ const styles = StyleSheet.create({
   },
   postItem: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
+    borderWidth: 1,
+    borderColor: "black",
   },
   postTitle: {
     fontSize: 18,

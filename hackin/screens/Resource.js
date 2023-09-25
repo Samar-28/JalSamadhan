@@ -17,7 +17,7 @@ function Resource({ navigation }) {
   const context = useContext(Context);
   const [address, setAddress] = useState("");
   const [details, setDetails] = useState("");
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState(context.location);
   const [modalVisible, setModalVisible] = useState(false);
   const [cat, setcat] = useState("");
   const categories = [
@@ -31,29 +31,22 @@ function Resource({ navigation }) {
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
         return;
       }
-
       let location = await Location.getCurrentPositionAsync({});
       setLocation({
         long: location.coords.longitude,
         lat: location.coords.latitude,
       });
+      context.setLocation({
+        long: location.coords.longitude,
+        lat: location.coords.latitude,
+      });
     })();
   }, []);
-console.log(location)
   const handleRequestSubmit = async () => {
-    // if (location === null) {
-    //   Alert.alert("Wait");
-    //   return;
-    // }
-
-    if (!cat) {
-      Alert.alert("Please select a category");
-      return;
-    }
 
     Alert.alert(
       "Warning",
@@ -65,8 +58,7 @@ console.log(location)
     const response = await context.AddResReq(
       details,
       address,
-      lat,long,
-      cat
+      lat,long
     );
     setDetails("");
     setAddress("");
@@ -98,50 +90,11 @@ console.log(location)
         numberOfLines={4}
       />
 
-      <TouchableOpacity
-        style={styles.categoryButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.buttonText}>
-          {cat || "Select Category"}
-        </Text>
-      </TouchableOpacity>
+      
 
       <TouchableOpacity style={styles.submitButton} onPress={handleRequestSubmit}>
         <Text style={styles.buttonText}>Submit Request</Text>
       </TouchableOpacity>
-
-      {/* Category Selection Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <ScrollView>
-            {categories.map((category, index) => (
-              <Pressable
-                key={index}
-                onPress={() => {
-                  setcat(category);
-                  setModalVisible(!modalVisible);
-                }}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? "#3498db" : "white",
-                  },
-                  styles.categoryItem,
-                ]}
-              >
-                <Text style={styles.categoryText}>{category}</Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -173,12 +126,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#3498db",
     borderRadius: 5,
     paddingVertical: 15,
-  },
-  categoryButton: {
-    backgroundColor: "#3498db",
-    borderRadius: 5,
-    paddingVertical: 15,
-    marginBottom: 20,
   },
   buttonText: {
     color: "#fff",

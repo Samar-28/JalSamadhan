@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState,useEffect } from "react";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
+
 import {
   View,
   Text,
@@ -6,27 +8,21 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import Context from "../ContextAPI";
 
-const postData = [
-  {
-    id: "1",
-    title: "Post 1",
-    upvotes: 10,
-    comments: 5,
-  },
-  {
-    id: "2",
-    title: "Post 2",
-    upvotes: 15,
-    comments: 8,
-  },
-];
-
-function ForumScreen() {
-  const [posts, setPosts] = useState(postData);
-
+function ForumScreen({navigation}) {
+  const [postData, setPosts] = useState([]);
+  const context=useContext(Context);
+  useEffect(() => {
+    async function getter(){
+    const response=await context.getForumPost();
+    console.log(response);
+    setPosts(response);}
+    getter();
+  }, [])
+  
   const handleUpvote = (postId) => {
-    const updatedPosts = posts.map((post) =>
+    const updatedPosts = postData.map((post) =>
       post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post
     );
     setPosts(updatedPosts);
@@ -36,26 +32,42 @@ function ForumScreen() {
   };
 
   const renderPostItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleComment(item.id)}>
+    <TouchableOpacity onPress={() => {
+      let post={};
+      for(let i=0;i<postData.length;i++){
+        if(postData[i].id===item.id){
+          post=postData[i];
+        }
+      }
+      navigation.navigate('ForumPost',{post:post})
+    }}>
       <View style={styles.postItem}>
         <Text style={styles.postTitle}>{item.title}</Text>
-        <TouchableOpacity onPress={() => handleUpvote(item.id)}>
-          <Text>Upvotes: {item.upvotes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleComment(item.id)}>
-          <Text>Comments: {item.comments}</Text>
-        </TouchableOpacity>
+        <View style={styles.actionButtons}>
+          <View
+            style={styles.actionButton}
+          >
+            <AntDesign name="arrowup" size={24} color="gray" />
+            <Text>Upvotes: {item.upvotes}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => handleComment(item.id)}
+            style={styles.actionButton}
+          >
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableOpacity>
   );
-
+  
   return (
     <View style={styles.container}>
-      <FlatList
-        data={posts}
+      <Text style={{fontSize:28,fontWeight:'bold',marginBottom:5}}>{context.state}</Text>
+      {postData.length!==0?<FlatList
+        data={postData}
         keyExtractor={(item) => item.id}
         renderItem={renderPostItem}
-      />
+      />:<Text style={styles.postTitle}>No Post on this {context.state}'s forum.</Text>}
     </View>
   );
 }
@@ -77,6 +89,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 8,
   },
+  actionButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+  },
 });
+
 
 export default ForumScreen;

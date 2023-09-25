@@ -22,7 +22,9 @@ console.log(heatmapData);
 
   return (
     <View style={styles.container}>
-      {heatmapData.length===0 ? <Text>No certain Emergency right now!</Text>:<MapView style={styles.map} initialRegion={initialRegion}>
+      {heatmapData.length===0 ? <Text>No certain Emergency right now!</Text>:<MapView style={styles.map} 
+      initialRegion={initialRegion}
+      >
         <Heatmap
           points={heatmapData}
           radius={40}
