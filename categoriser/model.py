@@ -1,7 +1,7 @@
 def ans(ques):
     import pandas as pd
 
-    df= pd.read_csv("/Users/harshkumawat/Desktop/MLClassification/daataset (1).csv", names=["Category","Description"],header=None)
+    df= pd.read_csv("daataset (1).csv", names=["Category","Description"],header=None)
     df.dropna(inplace=True)
 
     df.Category.unique()
