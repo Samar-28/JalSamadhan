@@ -2,6 +2,6 @@ fasttext
 regex
 pandas
 Flask
-firbase-admin==6.2.0
+firebase-admin==6.2.0
 requests==2.31.0
-sklear.model_selection
+sklearn.model_selection
