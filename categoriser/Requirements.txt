@@ -1,5 +1,5 @@
 fasttext
-re
+regex
 pandas
 Flask
 firbase-admin==6.2.0
