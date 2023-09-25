@@ -4,4 +4,4 @@ pandas
 Flask
 firebase-admin==6.2.0
 requests==2.31.0
-sklearn.model_selection
+sklearn
