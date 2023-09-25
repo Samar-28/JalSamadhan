@@ -77,15 +77,11 @@ firebase_admin.initialize_app(cred, {
 @app.route('/Resource/<string:doc_id>', methods=['PUT'])
 def update_data(doc_id):
     data = request.get_json()
-    print(doc_id)
+
     ref = db.reference('/Resource/'+doc_id)
-    print(data)
     val=data["description"]
     cat=ans(val)  
     current_data =ref.get()
-    print("1")
-    print(cat)
-    print(current_data)
     if ref.get():
         current_data['cat'] =  cat
         ref.set(current_data)
